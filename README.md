@@ -74,11 +74,12 @@ curl -fsSL https://raw.githubusercontent.com/community-scripts/core/main/tools/r
 
 The installer asks for:
 
-- The Home Assistant URL, including scheme and port
-- The Home Assistant long-lived access token; terminal input is hidden
 - Standard LXC settings such as container ID, storage, network, and resources
+- The URL of the existing Home Assistant instance, including scheme and port
+- The Home Assistant long-lived access token; terminal input is hidden
+- The MCP Streamable HTTP port, defaulting to `8000`
 
-The MCP port defaults to `8000`. It can be supplied in advance with the Community Scripts application variable `var_mcp_port` or changed in the environment file after installation.
+The Home Assistant and MCP values are collected on the Proxmox host before the LXC is created. They can instead be supplied in advance with the Community Scripts application variables documented in [Architecture and implementation](ARCHITECTURE.md#configuration-model).
 
 For the Home Assistant URL, use an address that is reachable from another LXC. Examples:
 
@@ -88,7 +89,7 @@ http://192.0.2.10:8123
 https://home-assistant.example.internal
 ```
 
-Do not use `localhost` unless Home Assistant is running inside the same LXC.
+Do not use `localhost`. This project does not install Home Assistant inside the Hass-MCP LXC.
 
 ## Connect an MCP client
 

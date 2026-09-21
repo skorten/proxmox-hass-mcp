@@ -13,21 +13,12 @@ setting_up_container
 network_check
 update_os
 
-var_ha_url="${var_ha_url:-}"
+var_ha_url="${var_ha_url:-http://homeassistant.local:8123}"
 var_ha_token="${var_ha_token:-}"
 var_mcp_port="${var_mcp_port:-8000}"
 
-if [[ -z "$var_ha_url" ]]; then
-  read -r -p "${TAB3}Home Assistant URL (default: http://homeassistant.local:8123): " var_ha_url
-fi
-var_ha_url="${var_ha_url:-http://homeassistant.local:8123}"
-
 if [[ -z "$var_ha_token" ]]; then
-  read -r -s -p "${TAB3}Home Assistant long-lived access token: " var_ha_token
-  echo
-fi
-if [[ -z "$var_ha_token" ]]; then
-  msg_error "No Home Assistant long-lived access token provided. Cannot continue."
+  msg_error "var_ha_token was not provided by the Proxmox host-side setup wizard."
   exit 1
 fi
 
