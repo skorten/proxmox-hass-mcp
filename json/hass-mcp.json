@@ -1,0 +1,78 @@
+{
+  "name": "Hass-MCP",
+  "slug": "hass-mcp",
+  "categories": [
+    16,
+    20
+  ],
+  "date_created": "2026-09-21",
+  "type": "ct",
+  "updateable": true,
+  "privileged": false,
+  "interface_port": 8000,
+  "documentation": "https://pypi.org/project/hass-mcp/",
+  "website": "https://pypi.org/project/hass-mcp/",
+  "repository": "https://github.com/voska/hass-mcp",
+  "platforms": [
+    "pve"
+  ],
+  "logo": "https://cdn.jsdelivr.net/gh/selfhst/icons@main/webp/home-assistant.webp",
+  "description": "Hass-MCP is a Model Context Protocol server that lets compatible AI clients query, control and troubleshoot Home Assistant through a stateless Streamable HTTP endpoint.",
+  "install_methods": [
+    {
+      "type": "default",
+      "script": "ct/hass-mcp.sh",
+      "config_path": "/opt/hass-mcp_data/hass-mcp.env",
+      "resources": {
+        "cpu": 1,
+        "ram": 512,
+        "hdd": 4,
+        "os": "Debian",
+        "version": "13"
+      }
+    }
+  ],
+  "app_vars": [
+    {
+      "name": "var_ha_url",
+      "label": "Home Assistant URL",
+      "type": "text",
+      "default": "http://homeassistant.local:8123",
+      "required": true,
+      "help": "Base URL reachable from the LXC, including scheme and port"
+    },
+    {
+      "name": "var_ha_token",
+      "label": "Home Assistant Token",
+      "type": "password",
+      "secret": true,
+      "required": true,
+      "help": "Long-lived access token for the Home Assistant account Hass-MCP will use"
+    },
+    {
+      "name": "var_mcp_port",
+      "label": "MCP Port",
+      "type": "number",
+      "default": "8000",
+      "required": true
+    }
+  ],
+  "default_credentials": {
+    "username": null,
+    "password": null
+  },
+  "notes": [
+    {
+      "text": "Connect MCP clients to http://<LXC-IP>:8000/mcp. If var_mcp_port is changed, use that port instead.",
+      "type": "info"
+    },
+    {
+      "text": "Hass-MCP HTTP transport has no built-in client authentication and grants the Home Assistant permissions of the configured token. Keep the port on a trusted network or protect it with a VPN, zero-trust network or authenticated reverse proxy. Never expose it directly to the public internet.",
+      "type": "warning"
+    },
+    {
+      "text": "Configuration is stored in /opt/hass-mcp_data/hass-mcp.env with mode 600. Dashboard backups are stored in /opt/hass-mcp_data/dashboard-backups.",
+      "type": "info"
+    }
+  ]
+}
