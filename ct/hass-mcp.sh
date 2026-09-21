@@ -26,82 +26,67 @@ catch_errors
 
 function collect_app_settings() {
   local result
-  local can_prompt=true
-
-  if ! command -v whiptail &>/dev/null || [[ ! -r /dev/tty || ! -w /dev/tty ]]; then
-    can_prompt=false
-  fi
 
   if [[ -z "$var_ha_url" ]]; then
-    if [[ "$can_prompt" == true ]]; then
-      if ! result=$(whiptail \
-        --backtitle "Proxmox VE Helper Scripts" \
-        --title "HOME ASSISTANT URL" \
-        --ok-button "Next" --cancel-button "Exit Script" \
-        --inputbox "Enter the URL of the existing Home Assistant instance.\n\nInclude the scheme and port." \
-        13 68 "http://homeassistant.local:8123" \
-        3>&1 1>&2 2>&3 </dev/tty); then
-        exit_script
-      fi
-      var_ha_url="${result:-http://homeassistant.local:8123}"
-    else
-      var_ha_url="http://homeassistant.local:8123"
+    if ! result=$(whiptail \
+      --backtitle "Proxmox VE Helper Scripts" \
+      --title "HOME ASSISTANT URL" \
+      --ok-button "Next" --cancel-button "Exit Script" \
+      --inputbox "Enter the URL of the existing Home Assistant instance.\n\nInclude the scheme and port." \
+      13 68 "http://homeassistant.local:8123" \
+      3>&1 1>&2 2>&3); then
+      msg_error "Home Assistant setup was cancelled or no interactive terminal is available."
+      exit 1
     fi
+    var_ha_url="${result:-http://homeassistant.local:8123}"
   fi
 
   if [[ -z "$var_ha_token" ]]; then
-    if [[ "$can_prompt" == true ]]; then
-      while [[ -z "$var_ha_token" ]]; do
-        if ! result=$(whiptail \
+    while [[ -z "$var_ha_token" ]]; do
+      if ! result=$(whiptail \
+        --backtitle "Proxmox VE Helper Scripts" \
+        --title "HOME ASSISTANT TOKEN" \
+        --ok-button "Next" --cancel-button "Exit Script" \
+        --passwordbox "Enter a Home Assistant long-lived access token.\n\nInput is hidden." \
+        13 68 \
+        3>&1 1>&2 2>&3); then
+        msg_error "Home Assistant setup was cancelled or no interactive terminal is available."
+        exit 1
+      fi
+      var_ha_token="$result"
+      if [[ -z "$var_ha_token" ]]; then
+        whiptail \
           --backtitle "Proxmox VE Helper Scripts" \
-          --title "HOME ASSISTANT TOKEN" \
-          --ok-button "Next" --cancel-button "Exit Script" \
-          --passwordbox "Enter a Home Assistant long-lived access token.\n\nInput is hidden." \
-          13 68 \
-          3>&1 1>&2 2>&3 </dev/tty); then
-          exit_script
-        fi
-        var_ha_token="$result"
-        if [[ -z "$var_ha_token" ]]; then
-          whiptail \
-            --backtitle "Proxmox VE Helper Scripts" \
-            --title "TOKEN REQUIRED" \
-            --msgbox "A Home Assistant long-lived access token is required." \
-            9 60 </dev/tty
-        fi
-      done
-    else
-      msg_error "var_ha_token is required when no interactive terminal is available."
-      exit 1
-    fi
+          --title "TOKEN REQUIRED" \
+          --msgbox "A Home Assistant long-lived access token is required." \
+          9 60
+      fi
+    done
   fi
 
   if [[ -z "$var_mcp_port" ]]; then
-    if [[ "$can_prompt" == true ]]; then
-      while true; do
-        if ! result=$(whiptail \
-          --backtitle "Proxmox VE Helper Scripts" \
-          --title "MCP HTTP PORT" \
-          --ok-button "Continue" --cancel-button "Exit Script" \
-          --inputbox "Enter the port for the Hass-MCP Streamable HTTP endpoint." \
-          11 68 "8000" \
-          3>&1 1>&2 2>&3 </dev/tty); then
-          exit_script
-        fi
-        result="${result:-8000}"
-        if [[ "$result" =~ ^[0-9]+$ ]] && ((${#result} <= 5)) && ((10#$result >= 1 && 10#$result <= 65535)); then
-          var_mcp_port="$result"
-          break
-        fi
-        whiptail \
-          --backtitle "Proxmox VE Helper Scripts" \
-          --title "INVALID PORT" \
-          --msgbox "Enter an integer between 1 and 65535." \
-          9 60 </dev/tty
-      done
-    else
-      var_mcp_port="8000"
-    fi
+    while true; do
+      if ! result=$(whiptail \
+        --backtitle "Proxmox VE Helper Scripts" \
+        --title "MCP HTTP PORT" \
+        --ok-button "Continue" --cancel-button "Exit Script" \
+        --inputbox "Enter the port for the Hass-MCP Streamable HTTP endpoint." \
+        11 68 "8000" \
+        3>&1 1>&2 2>&3); then
+        msg_error "Hass-MCP setup was cancelled or no interactive terminal is available."
+        exit 1
+      fi
+      result="${result:-8000}"
+      if [[ "$result" =~ ^[0-9]+$ ]] && ((${#result} <= 5)) && ((10#$result >= 1 && 10#$result <= 65535)); then
+        var_mcp_port="$result"
+        break
+      fi
+      whiptail \
+        --backtitle "Proxmox VE Helper Scripts" \
+        --title "INVALID PORT" \
+        --msgbox "Enter an integer between 1 and 65535." \
+        9 60
+    done
   fi
 
   if ! [[ "$var_mcp_port" =~ ^[0-9]+$ ]] || ((${#var_mcp_port} > 5)) || ((10#$var_mcp_port < 1 || 10#$var_mcp_port > 65535)); then
