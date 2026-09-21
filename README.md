@@ -1,5 +1,10 @@
 # Proxmox Hass-MCP
 
+> [!CAUTION]
+> **This project provides no security for the MCP endpoint. Deploy at your own risk.**
+>
+> The default installation includes no client authentication, authorization, TLS, or network access controls. Anyone who can reach the endpoint can invoke Hass-MCP using the Home Assistant permissions granted to its configured token. Do not expose it to the public internet, and do not deploy it on an untrusted network.
+
 `proxmox-hass-mcp` creates a dedicated Debian 13 LXC on Proxmox VE and installs [Hass-MCP](https://github.com/voska/hass-mcp) as a systemd service using MCP Streamable HTTP transport.
 
 The resulting MCP endpoint can be shared by network-based clients without running Docker inside the LXC.
