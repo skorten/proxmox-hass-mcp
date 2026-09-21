@@ -24,24 +24,12 @@ variables
 color
 catch_errors
 
-if command -v pveversion >/dev/null 2>&1; then
-  if [[ -z "$var_ha_url" ]]; then
-    var_ha_url=$(prompt_input "Home Assistant URL:" "http://homeassistant.local:8123" 120)
-  fi
-  if [[ -z "$var_ha_token" ]]; then
-    var_ha_token=$(prompt_password "Home Assistant long-lived access token:" "" 120)
-  fi
-  if [[ -z "$var_ha_token" ]]; then
-    msg_error "A Home Assistant long-lived access token is required. Set var_ha_token and retry."
-    exit 1
-  fi
-  if ! [[ "$var_mcp_port" =~ ^[0-9]+$ ]] || ((var_mcp_port < 1 || var_mcp_port > 65535)); then
-    msg_error "var_mcp_port must be an integer between 1 and 65535."
-    exit 1
-  fi
-fi
-
 export var_ha_url var_ha_token var_mcp_port
+
+if [[ -n "${mode:-}" && -z "$var_ha_token" ]]; then
+  msg_error "var_ha_token is required for unattended installs."
+  exit 1
+fi
 
 function update_script() {
   header_info

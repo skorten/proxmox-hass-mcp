@@ -76,8 +76,9 @@ The installer asks for:
 
 - The Home Assistant URL, including scheme and port
 - The Home Assistant long-lived access token; terminal input is hidden
-- The MCP port, which defaults to `8000`
 - Standard LXC settings such as container ID, storage, network, and resources
+
+The MCP port defaults to `8000`. It can be supplied in advance with the Community Scripts application variable `var_mcp_port` or changed in the environment file after installation.
 
 For the Home Assistant URL, use an address that is reachable from another LXC. Examples:
 

@@ -13,14 +13,24 @@ setting_up_container
 network_check
 update_os
 
-var_ha_url="${var_ha_url:-http://homeassistant.local:8123}"
+var_ha_url="${var_ha_url:-}"
 var_ha_token="${var_ha_token:-}"
 var_mcp_port="${var_mcp_port:-8000}"
 
+if [[ -z "$var_ha_url" ]]; then
+  read -r -p "${TAB3}Home Assistant URL (default: http://homeassistant.local:8123): " var_ha_url
+fi
+var_ha_url="${var_ha_url:-http://homeassistant.local:8123}"
+
 if [[ -z "$var_ha_token" ]]; then
-  msg_error "A Home Assistant long-lived access token is required."
+  read -r -s -p "${TAB3}Home Assistant long-lived access token: " var_ha_token
+  echo
+fi
+if [[ -z "$var_ha_token" ]]; then
+  msg_error "No Home Assistant long-lived access token provided. Cannot continue."
   exit 1
 fi
+
 if ! [[ "$var_mcp_port" =~ ^[0-9]+$ ]] || ((var_mcp_port < 1 || var_mcp_port > 65535)); then
   msg_error "var_mcp_port must be an integer between 1 and 65535."
   exit 1

@@ -10,8 +10,8 @@ The implementation deliberately excludes Docker, Home Assistant installation, pu
 
 | Path | Responsibility |
 | --- | --- |
-| `ct/hass-mcp.sh` | Defines LXC defaults, collects application settings, invokes Community Scripts Core, and implements updates. |
-| `install/hass-mcp-install.sh` | Runs inside the new LXC, installs Python and Hass-MCP, writes configuration, and creates the systemd unit. |
+| `ct/hass-mcp.sh` | Defines LXC defaults, exports pre-supplied application settings, invokes Community Scripts Core, and implements updates. |
+| `install/hass-mcp-install.sh` | Runs inside the new LXC, prompts for missing Home Assistant settings, installs Python and Hass-MCP, writes configuration, and creates the systemd unit. |
 | `json/hass-mcp.json` | Describes the application, defaults, input variables, and warnings in Community Scripts catalog format. |
 | `README.md` | Provides installation, setup, operation, and troubleshooting instructions. |
 | `ARCHITECTURE.md` | Records the design, boundaries, paths, and lifecycle described here. |
@@ -58,7 +58,7 @@ The host-side script obtains the shared engine from `community-scripts/core`. Fo
 The installation script performs these operations in order:
 
 1. Initializes Community Scripts installation helpers and updates Debian packages.
-2. Validates that a Home Assistant token is present and that the MCP port is valid.
+2. Prompts for a missing Home Assistant URL and token, then validates the required token and MCP port.
 3. Installs `uv` and Python 3.13 through `setup_uv`.
 4. Reads the latest stable Hass-MCP version from the upstream GitHub release API.
 5. Creates a Python environment at `/opt/hass-mcp`.
